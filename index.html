@@ -1,0 +1,140 @@
+<!-- declare HTML5 as the type of the html file -->
+<!DOCTYPE html>
+<!-- the main content of HTML file-->
+<html>
+<!-- head section including meta data of this HTML file -->
+<head>
+  <!--  declare HTML title  -->
+  <title>Leaflet Essentials</title>
+  <!-- include leaflet css -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css"/>
+</head>
+<!-- HTML files -->
+<body>
+  <!-- include leaflet js -->
+  <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
+  <!-- change the style of the map with centered horizontally and is 600px wide and 400px tall -->
+  <div id="mapid" style="width: 600px; height: 400px; margin: auto"></div>
+  <!-- javaScript -->
+  <script>
+    // create an variable to store map and set the map view to be
+    // centered on the UW Seattle campus and the zoom level as 16
+    var mymap = L.map('mapid').setView([47.656896, -122.307511],16);
+    // add a tile layer as a basemap which provided by a tile server
+    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png').addTo(mymap);
+    /*
+    create an variable to store the GeoJSON data with three properties that are
+    place_name for place name, short_description for Short Description, and
+    open_on_weekdays for if it opens on weekends; and geometry information
+    */
+    var myZoneUW = {
+      "type": "FeatureCollection",
+      "features": [
+        {
+          "type": "Feature",
+          "properties": {
+            "place_name": "Sieg Hall",
+            "short_description": "Dept. of Computer Science & Engineering, Electrical & Computer Engineering, Human Centered Design & Engineering",
+            "open_on_weekdays": "No"
+          },
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [[
+                [-122.30684012174606,47.65467726230277],
+                [-122.30608440935613,47.654924106061976],
+                [-122.3061990737915,47.65508761400292],
+                [-122.30695780366658,47.65484280358032],
+                [-122.30684012174606,47.65467726230277]]]
+          }
+        },
+        {
+          "type": "Feature",
+          "properties": {
+            "place_name": "Loew Hall",
+            "short_description": "Dept. of Dean's Office (Engineering Building)",
+            "open_on_weekdays": "No"
+          },
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [[
+                [-122.30497866868973,47.65436560062899],
+                [-122.30499140918255,47.654182216224164],
+                [-122.30497263371943,47.654154211652454],
+                [-122.30455353856087,47.65413772508305],
+                [-122.3040673881769,47.65429400851803],
+                [-122.30405062437057,47.654315237734686],
+                [-122.304170653224,47.65449116888942],
+                [-122.30421289801596,47.65450065424933],
+                [-122.3046313226223,47.65437644106628],
+                [-122.30495452880858,47.654381861284065],
+                [-122.30497866868973,47.65436560062899]]]
+          }
+        },
+        {
+          "type": "Feature",
+          "properties": {
+            "place_name": "Engineering Library",
+            "short_description": "Dept. of Industrial and Systems Engineering",
+            "open_on_weekdays": "Yes"
+          },
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [[
+                [-122.30473257601261,47.65467726230277],
+                [-122.30460315942763,47.65448461947324],
+                [-122.30456594377755,47.65447558579438],
+                [-122.30427592992781,47.654563889938146],
+                [-122.30426888912916,47.65458534488658],
+                [-122.304397970438,47.654777987344524],
+                [-122.30444356799126,47.65479040858062],
+                [-122.30472184717655,47.654705718275956],
+                [-122.30473257601261,47.65467726230277]]]
+          }
+        }
+      ]
+    }
+    // add GeoJSON data to the map
+    var geojsonLayer=L.geoJSON(myZoneUW, {style:styleFunction, onEachFeature: happenHover}).addTo(mymap);
+    // create a function to set the beginning color to purple
+    function styleFunction(){
+      return {color: "purple"};
+    }
+    //create newStyle() function to turn the features blue when the mouse hover on the feature
+    function newStyle(feature){
+      feature.setStyle({color:"blue"});
+    }
+    //create oldStyle() function to set the features green when the mouse leave the feature
+    function oldStyle(feature){
+      feature.setStyle({color:"green"});
+    }
+    // create a happenHover() function and return two value feature and layer to add the hovering effect
+    function happenHover(feature,layer){
+      /*
+      call popup function, the place name and the short description for each polygon will show up when mouseover
+      the popup window will gone if mouseout
+      there is no close button
+      */
+      layer.bindPopup(feature.properties.place_name + '<br>' + feature.properties.short_description, {closeButton: false});
+      //call openPopup() function to make the window popup when mouseover
+      layer.on('mouseover', function(){layer.openPopup();});
+      /*
+      call newStyle() function to change the color of polygon to blue when mouseover
+      use .target to target the object which the event associates with
+      */
+      layer.on('mouseover', (e) =>{
+         newStyle(e.target)
+      });
+      /*
+      call oldStyle() function to change the color of polygon to green when mouseover
+      use .target to target the object which the event associates with
+      */
+      layer.on('mouseout', (e) => {
+  			oldStyle(e.target)
+      });
+      // call closePopup() function to make the popup window close when mouseout
+      layer.on('mouseout', function() {layer.closePopup();});
+    }
+
+  </script>
+</body>
+</html>
